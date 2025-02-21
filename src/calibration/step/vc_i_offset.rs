@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::{
     calibration::{
         calib_context::CalibContext,
@@ -75,7 +73,7 @@ impl Setup<Volt, Ampere> for VcIOffsetStdSubStep {
 }
 
 impl Step<Volt, Ampere> for VcIOffsetStd {
-    fn get_sub_steps(&self) -> Vec<VcIOffsetStdSubStep> {
+    fn get_sub_steps(&self) -> Vec<impl SubStep<Volt, Ampere>> {
         self.sub_steps.to_vec()
     }
 }

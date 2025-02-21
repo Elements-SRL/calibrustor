@@ -53,3 +53,8 @@ pub trait Device<S: Uom, R: Uom> {
     where
         Self: Sized;
 }
+
+pub trait EepromDevice<S, R> : Device<S, R> where S: Uom, R: Uom {
+    fn read_eeprom(&self) -> Vec<u8>;
+    fn write_eeprom(&self) -> Result<(), DeviceError>;
+}

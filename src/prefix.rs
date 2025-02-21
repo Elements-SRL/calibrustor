@@ -91,6 +91,7 @@ impl UnitPfx {
     }
 }
 
+#[allow(clippy::suspicious_arithmetic_impl)]
 impl Mul for UnitPfx {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self::Output {
@@ -98,6 +99,7 @@ impl Mul for UnitPfx {
     }
 }
 
+#[allow(clippy::suspicious_arithmetic_impl)]
 impl Div for UnitPfx {
     type Output = Self;
     fn div(self, rhs: Self) -> Self::Output {
