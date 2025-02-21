@@ -1,51 +1,36 @@
-use std::sync::Arc;
-use super::step::Step;
-use crate::uom::{Ampere, Volt};
+use super::step::{vc_i_gain::IVEstimationIGain, vc_i_offset::VcIOffsetStdSubStep};
 
-// pub trait VoltageCalmpCalibration {
-//     fn get_steps(&self) -> Vec<Arc<dyn Step<Volt, Ampere>>>;
-// }
+struct ProgramEl03c {
+    // vc_v_gain: Option<bool>,
+    vc_i_gain: Option<IVEstimationIGain>,
+    vc_i_offset: Option<VcIOffsetStdSubStep>,
+    // vc_v_offset: Option<bool>,
+}
 
-// pub struct El03CProgram {
-//     steps: Vec<Arc<dyn Step<Volt, Ampere>>>,
-// }
-
-// impl VoltageCalmpCalibration for El03CProgram {
-//     fn get_strategy(&self) -> impl CalibrationStrategy<Volt, Ampere> {
-//         self.steps.to_vec
-//     }
-// }
-
-// impl El03CProgram {
-//     pub fn new(steps: Vec<Arc<dyn Step<Volt, Ampere>>>) -> Self {
-//         Self { steps }
-//     }
-// }
-
-mod el03_ctest {
-
-    use std::sync::Arc;
-
-    use crate::{
-        calibration::{
-            calib_context::CalibContext,
-            step::{
-                vc_i_gain::{IVEstimationIGain, IVEstimationIGainSubStep},
-                vc_i_offset::{self, VcIOffsetStd, VcIOffsetStdSubStep},
-            },
-            strategies::iv_estimation::IVEstimation,
-        },
-        prefix::UnitPfx,
-        ranged_measurement::RangedMeasurement,
-        resistors::{ModelCell, Resistors},
-        sampling_rate::SamplingRate,
-        uom::{Ampere, Volt},
-    };
-    use ndarray::array;
-
-
-    #[test]
-    fn fake_e4() {
-        
+impl ProgramEl03c {
+    fn new(
+        // vc_v_gain: Option<bool>,
+        vc_i_gain: Option<IVEstimationIGain>,
+        vc_i_offset: Option<VcIOffsetStdSubStep>,
+        // vc_v_offset: Option<bool>
+    ) -> Self {
+        Self {
+            // vc_v_gain,
+            vc_i_gain,
+            vc_i_offset,
+            // vc_v_offset
+        }
     }
+}
+
+struct ProgramEl07cd {
+    // vc_g_offset: Option<bool>,
+    vc_i_gain: Option<IVEstimationIGain>,
+    vc_i_offset: Option<VcIOffsetStdSubStep>,
+    // vc_v_offset: Option<bool>,
+    // vc_v_rs_correction: Option<bool>,
+    // cc_v_gain: Option<bool>,
+    // cc_v_offset: Option<bool>,
+    // cc_i_offset: Option<bool>,
+    // cc_i_gain: Option<bool>,
 }

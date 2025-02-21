@@ -156,7 +156,12 @@ mod tests {
     use super::*;
     use crate::{
         calibration::{
-            calib_context::CalibContext, step::{vc_i_gain::{IVEstimationIGain, IVEstimationIGainSubStep}, vc_i_offset::{VcIOffsetStd, VcIOffsetStdSubStep}}, strategies::{iv_estimation::IVEstimation, vc_i_offset::IOffsetStd}
+            calib_context::CalibContext,
+            step::{
+                vc_i_gain::{IVEstimationIGain, IVEstimationIGainSubStep},
+                vc_i_offset::{VcIOffsetStd, VcIOffsetStdSubStep},
+            },
+            strategies::{iv_estimation::IVEstimation, vc_i_offset::IOffsetStd},
         },
         resistors::{ModelCell, Resistors},
     };
@@ -194,15 +199,9 @@ mod tests {
         let small_res = IVEstimation::new(small_resistors, stim_small_resistors);
 
         let vc_i_gain = IVEstimationIGain::new(vec![
-            IVEstimationIGainSubStep::new(
-                n200_slow.clone(),
-                big_res.clone(),
-            ),
+            IVEstimationIGainSubStep::new(n200_slow.clone(), big_res.clone()),
             IVEstimationIGainSubStep::new(n200_fast.clone(), big_res.clone()),
-            IVEstimationIGainSubStep::new(
-                n20_slow.clone(),
-                small_res.clone(),
-            ),
+            IVEstimationIGainSubStep::new(n20_slow.clone(), small_res.clone()),
             IVEstimationIGainSubStep::new(n20_fast.clone(), small_res),
         ]);
         let vc_i_offset = VcIOffsetStd::new(vec![
@@ -212,11 +211,11 @@ mod tests {
             VcIOffsetStdSubStep::new(n20_fast),
         ]);
         let dev = Dummy::<Volt, Ampere>::new(1, 6);
-            // let p = El03CProgram::new(vec![Arc::new(vc_i_gain), Arc::new(vc_i_offset)]);
-            // p.get_steps().into_iter().map(|s| {
-            //     let s = s.setup(&dev);
-            //     s
-            // })
+        // let p = El03CProgram::new(vec![Arc::new(vc_i_gain), Arc::new(vc_i_offset)]);
+        // p.get_steps().into_iter().map(|s| {
+        //     let s = s.setup(&dev);
+        //     s
+        // })
     }
 
     #[test]
