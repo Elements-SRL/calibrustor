@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::{
     calibration::{
         calib_context::CalibContext,
@@ -17,11 +15,11 @@ use super::Step;
 
 #[derive(Clone)]
 pub struct IVEstimationIGain {
-    sub_steps: Vec<Arc<dyn SubStep<Volt, Ampere>>>,
+    sub_steps: Vec<IVEstimationIGainSubStep>,
 }
 
 impl IVEstimationIGain {
-    pub fn new(sub_steps: Vec<Arc<dyn SubStep<Volt, Ampere>>>) -> Self {
+    pub fn new(sub_steps: Vec<IVEstimationIGainSubStep>) -> Self {
         Self { sub_steps }
     }
 }
@@ -39,14 +37,14 @@ impl IVEstimationIGainSubStep {
 }
 
 impl Step<Volt, Ampere> for IVEstimationIGain {
-    fn get_sub_steps(&self) -> Vec<Arc<dyn SubStep<Volt, Ampere>>> {
+    fn get_sub_steps(&self) -> Vec<impl SubStep<Volt, Ampere>> {
         self.sub_steps.to_vec()
     }
 }
 
 impl SubStep<Volt, Ampere> for IVEstimationIGainSubStep {
-    fn get_strategy(&self) -> Box<dyn CalibrationStrategy<Volt, Ampere>> {
-        Box::new(self.cs.clone())
+    fn get_strategy(&self) -> impl CalibrationStrategy<Volt, Ampere> {
+        self.cs.clone()
     }
 }
 

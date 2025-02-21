@@ -19,15 +19,11 @@ impl Default for SetupStatus {
 
 // todo add a method to test if the setup is ok (equivalent to check_for_contact_routine)
 // it could also call
-pub trait Setup<S: Uom, R: Uom> {
-    fn setup(&self, d: impl Device<S, R>) -> Result<Box<dyn Device<S, R>>, DeviceError>
-    where
-        Self: Sized;
-    fn complete(self) -> Self
-    where
-        Self: Sized;
+pub trait Setup<S: Uom, R: Uom>: Sized {
+    fn setup(&self, d: impl Device<S, R>) -> Result<Box<dyn Device<S, R>>, DeviceError>;
+    fn complete(self) -> Self;
     fn get_status(&self) -> SetupStatus;
-    // fn test_setup(&self, d: &impl Device<S, R>) -> Result<(), SetupError> {
-    //     todo!()
-    // }
+    fn test_setup(&self, d: &impl Device<S, R>) -> Result<(), SetupError> {
+        todo!()
+    }
 }

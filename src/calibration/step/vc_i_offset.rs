@@ -17,10 +17,10 @@ use super::Step;
 
 #[derive(Clone)]
 pub struct VcIOffsetStd {
-    sub_steps: Vec<Arc<dyn SubStep<Volt, Ampere>>>,
+    sub_steps: Vec<VcIOffsetStdSubStep>,
 }
 impl VcIOffsetStd {
-    pub fn new(sub_steps: Vec<Arc<dyn SubStep<Volt, Ampere>>>) -> Self {
+    pub fn new(sub_steps: Vec<VcIOffsetStdSubStep>) -> Self {
         Self { sub_steps }
     }
 }
@@ -37,8 +37,8 @@ impl VcIOffsetStdSubStep {
 }
 
 impl SubStep<Volt, Ampere> for VcIOffsetStdSubStep {
-    fn get_strategy(&self) -> Box<dyn CalibrationStrategy<Volt, Ampere>> {
-        Box::new(IOffsetStd)
+    fn get_strategy(&self) -> impl CalibrationStrategy<Volt, Ampere> {
+        IOffsetStd
     }
 }
 
@@ -75,7 +75,7 @@ impl Setup<Volt, Ampere> for VcIOffsetStdSubStep {
 }
 
 impl Step<Volt, Ampere> for VcIOffsetStd {
-    fn get_sub_steps(&self) -> Vec<Arc<dyn SubStep<Volt, Ampere>>> {
+    fn get_sub_steps(&self) -> Vec<VcIOffsetStdSubStep> {
         self.sub_steps.to_vec()
     }
 }

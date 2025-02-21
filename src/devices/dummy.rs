@@ -151,11 +151,12 @@ impl Device<Ampere, Volt> for Dummy<Ampere, Volt> {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use super::*;
     use crate::{
         calibration::{
-            calib_context::CalibContext,
-            strategies::{iv_estimation::IVEstimation, vc_i_offset::IOffsetStd},
+            calib_context::CalibContext, step::{vc_i_gain::{IVEstimationIGain, IVEstimationIGainSubStep}, vc_i_offset::{VcIOffsetStd, VcIOffsetStdSubStep}}, strategies::{iv_estimation::IVEstimation, vc_i_offset::IOffsetStd}
         },
         resistors::{ModelCell, Resistors},
     };
@@ -187,20 +188,35 @@ mod tests {
         let n20_slow = CalibContext::new(stim_range, range_20n, sr1);
         let n20_fast = CalibContext::new(stim_range, range_20n, sr2);
 
-        let n200_slow = IVEstimation::new(big_resistors.clone(), stim_big_resistors.clone());
-        let n200_fast = IVEstimation::new(big_resistors, stim_big_resistors);
-        let n20_slow = IVEstimation::new(small_resistors.clone(), stim_small_resistors.clone());
-        let n20_fast = IVEstimation::new(small_resistors, stim_small_resistors);
-
         let offset = IOffsetStd::default();
-        // USARE STRUTTURE DIVERSE PER CALIB STEP, IN MODO DA INCAPSULARE IL SETUP COMUNE O MENO(?)
 
-        let d = Dummy::<Volt, Ampere>::new(4, 16);
-        println!("{:?}", d.acquire(1.0));
-        let a = array![1.0, 2.0, 3.0];
-        let d = d.inc();
-        println!("{:?}", d.acquire(1.0));
-        println!("{:?}", (a / array![0.0, 1.0, 0.0]).mean());
+        let big_res = IVEstimation::new(big_resistors, stim_big_resistors);
+        let small_res = IVEstimation::new(small_resistors, stim_small_resistors);
+
+        let vc_i_gain = IVEstimationIGain::new(vec![
+            IVEstimationIGainSubStep::new(
+                n200_slow.clone(),
+                big_res.clone(),
+            ),
+            IVEstimationIGainSubStep::new(n200_fast.clone(), big_res.clone()),
+            IVEstimationIGainSubStep::new(
+                n20_slow.clone(),
+                small_res.clone(),
+            ),
+            IVEstimationIGainSubStep::new(n20_fast.clone(), small_res),
+        ]);
+        let vc_i_offset = VcIOffsetStd::new(vec![
+            VcIOffsetStdSubStep::new(n200_slow),
+            VcIOffsetStdSubStep::new(n200_fast),
+            VcIOffsetStdSubStep::new(n20_slow),
+            VcIOffsetStdSubStep::new(n20_fast),
+        ]);
+        let dev = Dummy::<Volt, Ampere>::new(1, 6);
+            // let p = El03CProgram::new(vec![Arc::new(vc_i_gain), Arc::new(vc_i_offset)]);
+            // p.get_steps().into_iter().map(|s| {
+            //     let s = s.setup(&dev);
+            //     s
+            // })
     }
 
     #[test]
