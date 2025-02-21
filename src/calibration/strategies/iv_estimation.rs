@@ -5,7 +5,6 @@ use crate::{
         calibration_values::CalibrationValues,
     },
     device::Device,
-    device_error::DeviceError,
     resistors::Resistors,
     uom::{Ampere, Volt},
 };
@@ -13,23 +12,22 @@ use ndarray::{Array1, Array2, Axis};
 use std::collections::HashMap;
 
 pub struct IVEstimation {
-    setup_complete: bool,
     resistors: Resistors,
     stimuli: Vec<f64>,
 }
 
 impl IVEstimation {
     pub fn new(resistors: Resistors, stimuli: Vec<f64>) -> Self {
-        Self {
-            resistors,
-            stimuli,
-            setup_complete: false,
-        }
+        Self { resistors, stimuli }
     }
 }
 
-impl<D: Device<Volt, Ampere>> CalibrationStrategy<Volt, Ampere, D> for IVEstimation {
-    fn calibrate(&self, d: &D, cc: CalibContext<Volt, Ampere>) -> CalibrationResult<Volt, Ampere> {
+impl CalibrationStrategy<Volt, Ampere> for IVEstimation {
+    fn calibrate(
+        &self,
+        d: &impl Device<Volt, Ampere>,
+        cc: CalibContext<Volt, Ampere>,
+    ) -> CalibrationResult<Volt, Ampere> {
         let resistors = self.resistors.get_values();
         let active_channels_num = d.get_readout_channels_num();
         assert_eq!(resistors.len(), active_channels_num);
@@ -62,36 +60,5 @@ impl<D: Device<Volt, Ampere>> CalibrationStrategy<Volt, Ampere, D> for IVEstimat
         let gains = x / y;
         let cv = CalibrationValues::new_float(HashMap::from_iter(gains.into_iter().enumerate()));
         CalibrationResult::new(cc, cv)
-    }
-
-    fn setup(self, d: D, cc: &CalibContext<Volt, Ampere>) -> Result<D, DeviceError> {
-        let d = d.set_calib_context(cc)?;
-        let nominal_value = &self.resistors.get_name();
-        match &self.resistors {
-            Resistors::ModelCell(_) => {
-                println!("insert the model cell with {}", nominal_value);
-                Err(DeviceError::DeviceNotReady)
-            }
-            Resistors::ModifiedModelCell(_) => {
-                println!("insert the model cell with {}", nominal_value);
-                println!("set the switch to internal");
-                Err(DeviceError::DeviceNotReady)
-            }
-            Resistors::Internal(_) => {
-                println!("setting automatically");
-                Ok(d)
-            }
-        }
-    }
-
-    fn complete_setup(self) -> Self {
-        Self {
-            setup_complete: true,
-            ..self
-        }
-    }
-
-    fn is_setup_complete(&self) -> bool {
-        self.setup_complete
     }
 }

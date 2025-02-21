@@ -1,6 +1,15 @@
-use std::{collections::HashMap, marker::PhantomData};
+use crate::{
+    acquisition::Acquisition,
+    calibration::{calibration_error::CalibrationError, calibration_result::CalibrationResult},
+    device::Device,
+    device_error::DeviceError,
+    prefix::UnitPfx,
+    ranged_measurement::RangedMeasurement,
+    sampling_rate::SamplingRate,
+    uom::{Ampere, Uom, Volt},
+};
 use ndarray::ArcArray2;
-use crate::{acquisition::Acquisition, calibration::{calibration_error::CalibrationError, calibration_result::CalibrationResult}, device::Device, device_error::DeviceError, prefix::UnitPfx, ranged_measurement::RangedMeasurement, sampling_rate::SamplingRate, uom::{Ampere, Uom, Volt}};
+use std::{collections::HashMap, marker::PhantomData};
 
 struct Dummy<S: Uom, R: Uom> {
     counter: usize,
@@ -9,9 +18,14 @@ struct Dummy<S: Uom, R: Uom> {
     readout: PhantomData<R>,
 }
 
-impl <S: Uom, R: Uom> Dummy<S, R> {
+impl<S: Uom, R: Uom> Dummy<S, R> {
     fn new(counter: usize, channels: usize) -> Self {
-        Self { counter, channels, stimulus: PhantomData, readout: PhantomData }
+        Self {
+            counter,
+            channels,
+            stimulus: PhantomData,
+            readout: PhantomData,
+        }
     }
     fn inc(self) -> Self {
         Self {
@@ -65,7 +79,9 @@ impl Device<Volt, Ampere> for Dummy<Volt, Ampere> {
         let t = (t * 100.0) as usize;
         let s = ArcArray2::from_elem((self.channels, t), self.counter as f64);
         let r = ArcArray2::from_elem((self.channels, t), self.counter as f64);
-        Acquisition::new(s, r)
+        let active_readout_channels = self.get_active_readout_channels();
+        let active_stimulus_channels = self.get_active_stimuli_channels();
+        Acquisition::new(active_readout_channels, active_stimulus_channels, s, r)
     }
     fn set_calibration(self, cr: CalibrationResult<Volt, Ampere>) -> Result<Self, CalibrationError>
     where
@@ -120,7 +136,9 @@ impl Device<Ampere, Volt> for Dummy<Ampere, Volt> {
         let t = (t * 100.0) as usize;
         let s = ArcArray2::from_elem((self.channels, t), self.counter as f64);
         let r = ArcArray2::from_elem((self.channels, t), self.counter as f64);
-        Acquisition::new(s, r)
+        let active_readout_channels = self.get_active_readout_channels();
+        let active_stimulus_channels = self.get_active_stimuli_channels();
+        Acquisition::new(active_readout_channels, active_stimulus_channels, s, r)
     }
     fn set_calibration(self, cr: CalibrationResult<Ampere, Volt>) -> Result<Self, CalibrationError>
     where
@@ -131,11 +149,16 @@ impl Device<Ampere, Volt> for Dummy<Ampere, Volt> {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
-    use crate::{calibration::{calib_context::CalibContext, strategies::{iv_estimation::IVEstimation, vc_i_offset::IOffsetStd}}, resistors::{ModelCell, Resistors}};
     use super::*;
+    use crate::{
+        calibration::{
+            calib_context::CalibContext,
+            strategies::{iv_estimation::IVEstimation, vc_i_offset::IOffsetStd},
+        },
+        resistors::{ModelCell, Resistors},
+    };
     use ndarray::array;
 
     #[test]
@@ -169,7 +192,7 @@ mod tests {
         let n20_slow = IVEstimation::new(small_resistors.clone(), stim_small_resistors.clone());
         let n20_fast = IVEstimation::new(small_resistors, stim_small_resistors);
 
-        let offset = IOffsetStd::new();
+        let offset = IOffsetStd::default();
         // USARE STRUTTURE DIVERSE PER CALIB STEP, IN MODO DA INCAPSULARE IL SETUP COMUNE O MENO(?)
 
         let d = Dummy::<Volt, Ampere>::new(4, 16);

@@ -1,8 +1,10 @@
-use crate::{device::Device, device_error::DeviceError, uom::Uom};
-use super::calib_context::CalibContext;
+use super::{calib_context::CalibContext, setup::Setup, strategies::CalibrationStrategy};
+use crate::uom::Uom;
 
+pub mod vc_i_gain;
+pub mod vc_i_offset;
 
-pub trait Step<S: Uom, R: Uom>{
-    fn setup<T1: Uom, T2: Uom>(&self, device: impl Device<T1, T2>) -> Result<impl Device<S, R>, DeviceError>;
-    fn get_calibration_contexts() -> CalibContext<S, R>;
+pub trait Step<S: Uom, R: Uom>: Setup<S, R> {
+    fn get_calibration_contexts(&self) -> Vec<CalibContext<S, R>>;
+    fn get_strategy(&self) -> impl CalibrationStrategy<S, R>;
 }

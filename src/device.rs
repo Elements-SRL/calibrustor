@@ -1,11 +1,13 @@
 use crate::{
+    acquisition::Acquisition,
     calibration::{
         calib_context::CalibContext, calibration_error::CalibrationError,
         calibration_result::CalibrationResult,
     },
     device_error::DeviceError,
+    ranged_measurement::RangedMeasurement,
+    sampling_rate::SamplingRate,
     uom::Uom,
-    Acquisition, RangedMeasurement, SamplingRate,
 };
 use std::collections::HashMap;
 
