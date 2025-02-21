@@ -26,7 +26,7 @@ impl IVEstimation {
 impl CalibrationStrategy<Volt, Ampere> for IVEstimation {
     fn calibrate(
         &self,
-        d: &impl Device<Volt, Ampere>,
+        d: &dyn Device<Volt, Ampere>,
         cc: CalibContext<Volt, Ampere>,
     ) -> CalibrationResult<Volt, Ampere> {
         let resistors = self.resistors.get_values();

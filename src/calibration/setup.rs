@@ -1,7 +1,5 @@
 use crate::{device::Device, device_error::DeviceError, uom::Uom};
 
-use super::calib_context::CalibContext;
-
 pub enum SetupStatus {
     NotInitialized,
     Ready,
@@ -29,7 +27,7 @@ pub trait Setup<S: Uom, R: Uom> {
     where
         Self: Sized;
     fn get_status(&self) -> SetupStatus;
-    fn test_setup(&self, d: impl Device<S, R>) -> Result<(), SetupError> {
-        todo!()
-    }
+    // fn test_setup(&self, d: &impl Device<S, R>) -> Result<(), SetupError> {
+    //     todo!()
+    // }
 }

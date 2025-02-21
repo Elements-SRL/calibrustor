@@ -15,7 +15,7 @@ pub struct IOffsetStd;
 impl CalibrationStrategy<Volt, Ampere> for IOffsetStd {
     fn calibrate(
         &self,
-        d: &impl Device<Volt, Ampere>,
+        d: &dyn Device<Volt, Ampere>,
         cc: CalibContext<Volt, Ampere>,
     ) -> CalibrationResult<Volt, Ampere> {
         let a = d.acquire(1.0);

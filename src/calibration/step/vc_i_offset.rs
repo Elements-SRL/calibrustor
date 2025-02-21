@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::{
     calibration::{
         calib_context::CalibContext,
@@ -13,11 +15,12 @@ use crate::{
 
 use super::Step;
 
+#[derive(Clone)]
 pub struct VcIOffsetStd {
-    sub_steps: Vec<VcIOffsetStdSubStep>,
+    sub_steps: Vec<Arc<dyn SubStep<Volt, Ampere>>>,
 }
 impl VcIOffsetStd {
-    pub fn new(sub_steps: Vec<VcIOffsetStdSubStep>) -> Self {
+    pub fn new(sub_steps: Vec<Arc<dyn SubStep<Volt, Ampere>>>,) -> Self {
         Self { sub_steps }
     }
 }
@@ -34,15 +37,15 @@ impl VcIOffsetStdSubStep {
 }
 
 impl SubStep<Volt, Ampere> for VcIOffsetStdSubStep {
-    fn get_strategy(&self) -> impl CalibrationStrategy<Volt, Ampere> {
-        IOffsetStd
+    fn get_strategy(&self) -> Box<dyn CalibrationStrategy<Volt, Ampere>> {
+        Box::new(IOffsetStd)
     }
 }
 
 impl CalibrationStrategy<Volt, Ampere> for VcIOffsetStdSubStep {
     fn calibrate(
         &self,
-        d: &impl Device<Volt, Ampere>,
+        d: &dyn Device<Volt, Ampere>,
         cc: CalibContext<Volt, Ampere>,
     ) -> CalibrationResult<Volt, Ampere> {
         let s = self.get_strategy();
@@ -72,8 +75,8 @@ impl Setup<Volt, Ampere> for VcIOffsetStdSubStep {
 }
 
 impl Step<Volt, Ampere> for VcIOffsetStd {
-    fn get_sub_steps(&self) -> Vec<impl SubStep<Volt, Ampere>> {
-        self.sub_steps.clone()
+    fn get_sub_steps(&self) -> Vec<Arc<dyn SubStep<Volt, Ampere>>> {
+        self.sub_steps.to_vec()
     }
 }
 

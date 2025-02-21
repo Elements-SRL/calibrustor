@@ -1,29 +1,40 @@
+use std::sync::Arc;
+
+use crate::uom::{Ampere, Volt};
 use super::step::{
     vc_i_gain::IVEstimationIGain,
-    vc_i_offset::VcIOffsetStd,
+    vc_i_offset::VcIOffsetStd, Step,
 };
 
-struct El03CProgram {
-    vc_i_gain: IVEstimationIGain,
-    vc_i_offset: VcIOffsetStd,
+pub trait VoltageCalmpCalibration {
+    fn get_steps(&self) -> Vec<Arc<dyn Step<Volt, Ampere>>>;
+}
+
+pub struct El03CProgram {
+    steps: Vec<Arc<dyn Step<Volt, Ampere>>>,
+}
+
+impl VoltageCalmpCalibration for El03CProgram {
+    fn get_steps(&self) -> Vec<Arc<dyn Step<Volt, Ampere>>> {
+        self.steps.to_vec()
+    }
 }
 
 impl El03CProgram {
-    pub fn new(vc_i_gain: IVEstimationIGain, vc_i_offset: VcIOffsetStd) -> Self {
-        Self {
-            vc_i_gain,
-            vc_i_offset,
-        }
+    pub fn new(steps: Vec<Arc<dyn Step<Volt, Ampere>>>) -> Self {
+        Self { steps }
     }
 }
 
 mod el03_ctest {
 
+    use std::sync::Arc;
+
     use crate::{
         calibration::{
             calib_context::CalibContext,
             step::{
-                vc_i_gain::{self, IVEstimationIGain, IVEstimationIGainSubStep},
+                vc_i_gain::{IVEstimationIGain, IVEstimationIGainSubStep},
                 vc_i_offset::{self, VcIOffsetStd, VcIOffsetStdSubStep},
             },
             strategies::iv_estimation::IVEstimation,
@@ -36,7 +47,7 @@ mod el03_ctest {
     };
     use ndarray::array;
 
-    use super::El03CProgram;
+    use super::{El03CProgram, VoltageCalmpCalibration};
 
     #[test]
     fn fake_e4() {
@@ -65,18 +76,17 @@ mod el03_ctest {
         let n20_fast = CalibContext::new(stim_range, range_20n, sr2);
 
         let vc_i_gain = IVEstimationIGain::new(vec![
-            IVEstimationIGainSubStep::new(n200_slow.clone(), big_res.clone()),
-            IVEstimationIGainSubStep::new(n200_fast.clone(), big_res),
-            IVEstimationIGainSubStep::new(n20_slow.clone(), small_res.clone()),
-            IVEstimationIGainSubStep::new(n20_fast.clone(), small_res),
+            Arc::new(IVEstimationIGainSubStep::new(n200_slow.clone(), big_res.clone())),
+            Arc::new(IVEstimationIGainSubStep::new(n200_fast.clone(), big_res)),
+            Arc::new(IVEstimationIGainSubStep::new(n20_slow.clone(), small_res.clone())),
+            Arc::new(IVEstimationIGainSubStep::new(n20_fast.clone(), small_res)),
         ]);
         let vc_i_offset = VcIOffsetStd::new(vec![
-            VcIOffsetStdSubStep::new(n200_slow),
-            VcIOffsetStdSubStep::new(n200_fast),
-            VcIOffsetStdSubStep::new(n20_slow),
-            VcIOffsetStdSubStep::new(n20_fast),
+            Arc::new(VcIOffsetStdSubStep::new(n200_slow)),
+            Arc::new(VcIOffsetStdSubStep::new(n200_fast)),
+            Arc::new(VcIOffsetStdSubStep::new(n20_slow)),
+            Arc::new(VcIOffsetStdSubStep::new(n20_fast)),
         ]);
-        let p = El03CProgram::new(vc_i_gain, vc_i_offset);
-
+        let p = El03CProgram::new(vec![Arc::new(vc_i_gain), Arc::new(vc_i_offset)]);
     }
 }

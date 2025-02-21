@@ -8,5 +8,5 @@ where
     S: Uom,
     R: Uom,
 {
-    fn calibrate(&self, d: &impl Device<S, R>, cc: CalibContext<S, R>) -> CalibrationResult<S, R>;
+    fn calibrate(&self, d: &dyn Device<S, R>, cc: CalibContext<S, R>) -> CalibrationResult<S, R>;
 }
