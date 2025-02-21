@@ -1,10 +1,7 @@
 use std::sync::Arc;
 
+use super::step::Step;
 use crate::uom::{Ampere, Volt};
-use super::step::{
-    vc_i_gain::IVEstimationIGain,
-    vc_i_offset::VcIOffsetStd, Step,
-};
 
 pub trait VoltageCalmpCalibration {
     fn get_steps(&self) -> Vec<Arc<dyn Step<Volt, Ampere>>>;
@@ -51,12 +48,12 @@ mod el03_ctest {
 
     #[test]
     fn fake_e4() {
-        let small_res =
-            Resistors::ModifiedModelCell(ModelCell::new("ciccia", array![2.0, 2.0, 2.0, 2.0].into()));
-        let big_res = Resistors::ModifiedModelCell(ModelCell::new(
-            "culo",
-            array![1.0, 1.0, 1.0, 1.0].into(),
+        let small_res = Resistors::ModifiedModelCell(ModelCell::new(
+            "ciccia",
+            array![2.0, 2.0, 2.0, 2.0].into(),
         ));
+        let big_res =
+            Resistors::ModifiedModelCell(ModelCell::new("culo", array![1.0, 1.0, 1.0, 1.0].into()));
         let big_stim = vec![2.0; 7];
         let small_stim = vec![2.0; 7];
         let big_res = IVEstimation::new(big_res, big_stim);
@@ -76,9 +73,15 @@ mod el03_ctest {
         let n20_fast = CalibContext::new(stim_range, range_20n, sr2);
 
         let vc_i_gain = IVEstimationIGain::new(vec![
-            Arc::new(IVEstimationIGainSubStep::new(n200_slow.clone(), big_res.clone())),
+            Arc::new(IVEstimationIGainSubStep::new(
+                n200_slow.clone(),
+                big_res.clone(),
+            )),
             Arc::new(IVEstimationIGainSubStep::new(n200_fast.clone(), big_res)),
-            Arc::new(IVEstimationIGainSubStep::new(n20_slow.clone(), small_res.clone())),
+            Arc::new(IVEstimationIGainSubStep::new(
+                n20_slow.clone(),
+                small_res.clone(),
+            )),
             Arc::new(IVEstimationIGainSubStep::new(n20_fast.clone(), small_res)),
         ]);
         let vc_i_offset = VcIOffsetStd::new(vec![

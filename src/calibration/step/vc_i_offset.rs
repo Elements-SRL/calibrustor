@@ -20,7 +20,7 @@ pub struct VcIOffsetStd {
     sub_steps: Vec<Arc<dyn SubStep<Volt, Ampere>>>,
 }
 impl VcIOffsetStd {
-    pub fn new(sub_steps: Vec<Arc<dyn SubStep<Volt, Ampere>>>,) -> Self {
+    pub fn new(sub_steps: Vec<Arc<dyn SubStep<Volt, Ampere>>>) -> Self {
         Self { sub_steps }
     }
 }

@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-pub trait Uom: Debug + Clone + Copy + Sized{
+pub trait Uom: Debug + Clone + Copy + Sized {
     fn get_label(&self) -> String;
 }
 
