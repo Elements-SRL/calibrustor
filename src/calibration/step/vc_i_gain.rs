@@ -1,30 +1,81 @@
 use crate::{
     calibration::{
         calib_context::CalibContext,
+        calibration_result::CalibrationResult,
         setup::{Setup, SetupStatus},
         strategies::{iv_estimation::IVEstimation, CalibrationStrategy},
+        sub_step::SubStep,
     },
     device::Device,
     device_error::DeviceError,
-    resistors::Resistors,
     uom::{Ampere, Volt},
 };
 
 use super::Step;
 
 pub struct IVEstimationIGain {
-    calib_contexts: Vec<CalibContext<Volt, Ampere>>,
-    resistors: Resistors,
-    stimuli: Vec<f64>,
+    sub_steps: Vec<IVEstimationIGainSubStep>,
+}
+
+impl IVEstimationIGain {
+    pub fn new(sub_steps: Vec<IVEstimationIGainSubStep>) -> Self {
+        Self { sub_steps }
+    }
+}
+
+#[derive(Clone)]
+pub struct IVEstimationIGainSubStep {
+    cc: CalibContext<Volt, Ampere>,
+    cs: IVEstimation,
+}
+
+impl IVEstimationIGainSubStep {
+    pub fn new(cc: CalibContext<Volt, Ampere>, cs: IVEstimation) -> Self {
+        Self { cc, cs }
+    }
 }
 
 impl Step<Volt, Ampere> for IVEstimationIGain {
-    fn get_calibration_contexts(&self) -> Vec<CalibContext<Volt, Ampere>> {
-        self.calib_contexts.clone()
+    fn get_sub_steps(&self) -> Vec<impl SubStep<Volt, Ampere>> {
+        self.sub_steps.clone()
     }
+}
 
+impl SubStep<Volt, Ampere> for IVEstimationIGainSubStep {
     fn get_strategy(&self) -> impl CalibrationStrategy<Volt, Ampere> {
-        IVEstimation::new(self.resistors.clone(), self.stimuli.clone())
+        self.cs.clone()
+    }
+}
+
+impl CalibrationStrategy<Volt, Ampere> for IVEstimationIGainSubStep {
+    fn calibrate(
+        &self,
+        d: &impl Device<Volt, Ampere>,
+        cc: CalibContext<Volt, Ampere>,
+    ) -> CalibrationResult<Volt, Ampere> {
+        self.get_strategy().calibrate(d, cc)
+    }
+}
+
+impl Setup<Volt, Ampere> for IVEstimationIGainSubStep {
+    fn complete(self) -> Self
+    where
+        Self: Sized,
+    {
+        todo!()
+    }
+    fn get_status(&self) -> SetupStatus {
+        todo!()
+    }
+    fn setup(
+        &self,
+        d: impl Device<Volt, Ampere>,
+    ) -> Result<Box<dyn Device<Volt, Ampere>>, DeviceError>
+    where
+        Self: Sized,
+    {
+        d.set_calib_context(&self.cc)?;
+        todo!()
     }
 }
 
@@ -40,8 +91,7 @@ impl Setup<Volt, Ampere> for IVEstimationIGain {
     }
     fn setup(
         &self,
-        d: impl crate::device::Device<Volt, Ampere>,
-        cc: Option<CalibContext<Volt, Ampere>>,
+        d: impl Device<Volt, Ampere>,
     ) -> Result<Box<dyn Device<Volt, Ampere>>, DeviceError>
     where
         Self: Sized,

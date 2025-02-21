@@ -9,7 +9,7 @@ use crate::{
 };
 use std::collections::HashMap;
 
-#[derive(Default)]
+#[derive(Default, Clone, Copy)]
 pub struct IOffsetStd;
 
 impl CalibrationStrategy<Volt, Ampere> for IOffsetStd {

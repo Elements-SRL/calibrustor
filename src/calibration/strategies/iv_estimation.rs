@@ -11,6 +11,7 @@ use crate::{
 use ndarray::{Array1, Array2, Axis};
 use std::collections::HashMap;
 
+#[derive(Clone)]
 pub struct IVEstimation {
     resistors: Resistors,
     stimuli: Vec<f64>,
