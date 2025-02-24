@@ -1,33 +1,69 @@
 use ndarray::ArcArray1;
 
-#[derive(Clone)]
-pub enum Resistors {
-    ModelCell(ModelCell),
-    ModifiedModelCell(ModelCell),
-    Internal(ModelCell),
+pub trait Resistors: Clone {
+    fn get_name(&self) -> String;
+    fn mean(&self) -> f64;
+    fn get_values(&self) -> ArcArray1<f64>;
 }
 
-impl Resistors {
-    pub fn get_name(&self) -> String {
-        match self {
-            Resistors::ModelCell(mc) => mc.get_name(),
-            Resistors::ModifiedModelCell(mc) => mc.get_name(),
-            Resistors::Internal(mc) => mc.get_name(),
-        }
+#[derive(Clone)]
+pub struct RegularModelCell(ModelCell);
+
+impl RegularModelCell {
+    pub fn new(name: &str, values: ArcArray1<f64>) -> Self {
+        Self(ModelCell::new(name, values))
     }
-    pub fn mean(&self) -> f64 {
-        match self {
-            Resistors::ModelCell(mc) => mc.mean(),
-            Resistors::ModifiedModelCell(mc) => mc.mean(),
-            Resistors::Internal(mc) => mc.mean(),
-        }
+}
+
+impl Resistors for RegularModelCell {
+    fn get_name(&self) -> String {
+        self.0.get_name()
     }
-    pub fn get_values(&self) -> ArcArray1<f64> {
-        match self {
-            Resistors::ModelCell(mc) => mc.get_values(),
-            Resistors::ModifiedModelCell(mc) => mc.get_values(),
-            Resistors::Internal(mc) => mc.get_values(),
-        }
+    fn mean(&self) -> f64 {
+        self.0.mean()
+    }
+    fn get_values(&self) -> ArcArray1<f64> {
+        self.0.get_values()
+    }
+}
+
+#[derive(Clone)]
+pub struct ModifiedModelCell(ModelCell);
+
+impl ModifiedModelCell {
+    pub fn new(name: &str, values: ArcArray1<f64>) -> Self {
+        Self(ModelCell::new(name, values))
+    }
+}
+impl Resistors for ModifiedModelCell {
+    fn get_name(&self) -> String {
+        self.0.get_name()
+    }
+    fn mean(&self) -> f64 {
+        self.0.mean()
+    }
+    fn get_values(&self) -> ArcArray1<f64> {
+        self.0.get_values()
+    }
+}
+
+#[derive(Clone)]
+pub struct Internal(ModelCell);
+
+impl Internal {
+    pub fn new(name: &str, values: ArcArray1<f64>) -> Self {
+        Self(ModelCell::new(name, values))
+    }
+}
+impl Resistors for Internal {
+    fn get_name(&self) -> String {
+        self.0.get_name()
+    }
+    fn mean(&self) -> f64 {
+        self.0.mean()
+    }
+    fn get_values(&self) -> ArcArray1<f64> {
+        self.0.get_values()
     }
 }
 

@@ -12,20 +12,27 @@ use ndarray::{Array1, Array2, Axis};
 use std::collections::HashMap;
 
 #[derive(Clone)]
-pub struct IVEstimation {
-    resistors: Resistors,
+pub struct IVEstimation<R>
+where
+    R: Resistors,
+{
+    resistors: R,
     stimuli: Vec<f64>,
 }
 
-impl IVEstimation {
-    pub fn new(resistors: Resistors, stimuli: Vec<f64>) -> Self {
+impl<R> IVEstimation<R>
+where
+    R: Resistors,
+{
+    pub fn new(resistors: R, stimuli: Vec<f64>) -> Self {
         Self { resistors, stimuli }
     }
 }
 
-impl<D> CalibrationStrategy<Volt, Ampere, D> for IVEstimation
+impl<R, D> CalibrationStrategy<Volt, Ampere, D> for IVEstimation<R>
 where
     D: Device<Volt, Ampere>,
+    R: Resistors,
 {
     fn calibrate(&self, d: &D, cc: CalibContext<Volt, Ampere>) -> CalibrationResult<Volt, Ampere> {
         let resistors = self.resistors.get_values();

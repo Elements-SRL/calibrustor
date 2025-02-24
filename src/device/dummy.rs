@@ -154,25 +154,25 @@ mod tests {
     use super::*;
     use crate::{
         calibration::{
-            calib_context::CalibContext, program::ProgramEl03c, step::{vc_i_gain::IVEstimationIGain, vc_i_offset::VcIOffsetStd}, strategies::{iv_estimation::IVEstimation, vc_i_offset::IOffsetStd}, sub_step::{
+            calib_context::CalibContext,
+            program::ProgramEl03c,
+            step::{vc_i_gain::IVEstimationIGain, vc_i_offset::VcIOffsetStd},
+            strategies::{iv_estimation::IVEstimation, vc_i_offset::IOffsetStd},
+            sub_step::{
                 vc_i_gain::iv_estimation::IVEstimationIGainSubStep,
                 vc_i_offset::i_offset_std::VcIOffsetStdSubStep,
-            }
+            },
         },
-        resistors::{ModelCell, Resistors},
+        resistors::ModifiedModelCell,
     };
     use ndarray::array;
 
     #[test]
     fn dummy_dev() {
-        let small_resistors = Resistors::ModifiedModelCell(ModelCell::new(
-            "5M",
-            array![5.0e6, 5.0e6, 5.0e6, 5.0e6,].into(),
-        ));
-        let big_resistors = Resistors::ModifiedModelCell(ModelCell::new(
-            "500M",
-            array![500.0e6, 500.0e6, 500.0e6, 500.0e6,].into(),
-        ));
+        let small_resistors =
+            ModifiedModelCell::new("5M", array![5.0e6, 5.0e6, 5.0e6, 5.0e6,].into());
+        let big_resistors =
+            ModifiedModelCell::new("500M", array![500.0e6, 500.0e6, 500.0e6, 500.0e6,].into());
         let stim_small_resistors = vec![-0.04, -0.02, -0.01, 0.0, 0.01, 0.02, 0.04];
         let stim_big_resistors = vec![-0.4, -0.2, -0.1, 0.0, 0.1, 0.2, 0.4];
 

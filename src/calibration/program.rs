@@ -1,8 +1,10 @@
+use crate::resistors::{Internal, ModifiedModelCell};
+
 use super::step::{vc_i_gain::IVEstimationIGain, vc_i_offset::VcIOffsetStd};
 
 pub struct ProgramEl03c {
     // vc_v_gain: Option<bool>,
-    vc_i_gain: Option<IVEstimationIGain>,
+    vc_i_gain: Option<IVEstimationIGain<ModifiedModelCell>>,
     vc_i_offset: Option<VcIOffsetStd>,
     // vc_v_offset: Option<bool>,
 }
@@ -10,7 +12,7 @@ pub struct ProgramEl03c {
 impl ProgramEl03c {
     pub fn new(
         // vc_v_gain: Option<bool>,
-        vc_i_gain: Option<IVEstimationIGain>,
+        vc_i_gain: Option<IVEstimationIGain<ModifiedModelCell>>,
         vc_i_offset: Option<VcIOffsetStd>,
         // vc_v_offset: Option<bool>
     ) -> Self {
@@ -25,7 +27,7 @@ impl ProgramEl03c {
 
 struct ProgramEl07cd {
     // vc_g_offset: Option<bool>,
-    vc_i_gain: Option<IVEstimationIGain>,
+    vc_i_gain: Option<IVEstimationIGain<Internal>>,
     vc_i_offset: Option<VcIOffsetStd>,
     // vc_v_offset: Option<bool>,
     // vc_v_rs_correction: Option<bool>,

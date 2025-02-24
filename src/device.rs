@@ -41,7 +41,7 @@ where
     fn set_stimulus_range(self, rm: RangedMeasurement<S>) -> Result<Self, DeviceError>;
     fn set_readout_range(self, rm: RangedMeasurement<R>) -> Result<Self, DeviceError>;
     fn set_sampling_rate(self, sr: SamplingRate) -> Result<Self, DeviceError>;
-    fn set_calib_context(self, cc: &CalibContext<S, R>) -> Result<Self, DeviceError>{
+    fn set_calib_context(self, cc: &CalibContext<S, R>) -> Result<Self, DeviceError> {
         self.set_stimulus_range(cc.get_stimulus_range())?
             .set_readout_range(cc.get_readout_range())?
             .set_sampling_rate(cc.get_sampling_rate())
@@ -69,8 +69,7 @@ where
         Self: Sized;
 }
 
-
-pub trait InternalResistorsDevice<S, R>: Device<S, R>
+pub trait InternalResistorsDevice<S, R>: InputSwitchDevice<S, R>
 where
     S: Uom,
     R: Uom,

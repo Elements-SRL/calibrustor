@@ -8,42 +8,52 @@ use crate::{
     },
     device::Device,
     device_error::DeviceError,
+    resistors::Resistors,
     uom::{Ampere, Volt},
 };
 
 #[derive(Clone)]
-pub struct IVEstimationIGainSubStep {
+pub struct IVEstimationIGainSubStep<R>
+where
+    R: Resistors,
+{
     cc: CalibContext<Volt, Ampere>,
-    cs: IVEstimation,
+    cs: IVEstimation<R>,
 }
 
-impl IVEstimationIGainSubStep {
-    pub fn new(cc: CalibContext<Volt, Ampere>, cs: IVEstimation) -> Self {
+impl<R> IVEstimationIGainSubStep<R>
+where
+    R: Resistors,
+{
+    pub fn new(cc: CalibContext<Volt, Ampere>, cs: IVEstimation<R>) -> Self {
         Self { cc, cs }
     }
 }
 
-impl<D> SubStep<Volt, Ampere, D> for IVEstimationIGainSubStep
+impl<R, D> SubStep<Volt, Ampere, D> for IVEstimationIGainSubStep<R>
 where
     D: Device<Volt, Ampere>,
+    R: Resistors,
 {
     fn get_strategy(&self) -> impl CalibrationStrategy<Volt, Ampere, D> {
         self.cs.clone()
     }
 }
 
-impl<D> CalibrationStrategy<Volt, Ampere, D> for IVEstimationIGainSubStep
+impl<R, D> CalibrationStrategy<Volt, Ampere, D> for IVEstimationIGainSubStep<R>
 where
     D: Device<Volt, Ampere>,
+    R: Resistors,
 {
     fn calibrate(&self, d: &D, cc: CalibContext<Volt, Ampere>) -> CalibrationResult<Volt, Ampere> {
         self.get_strategy().calibrate(d, cc)
     }
 }
 
-impl<D> Setup<Volt, Ampere, D> for IVEstimationIGainSubStep
+impl<R, D> Setup<Volt, Ampere, D> for IVEstimationIGainSubStep<R>
 where
     D: Device<Volt, Ampere>,
+    R: Resistors,
 {
     fn complete(self) -> Self
     where
