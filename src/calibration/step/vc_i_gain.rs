@@ -5,7 +5,7 @@ use crate::{
     },
     device::Device,
     device_error::DeviceError,
-    resistors::{Internal, ModelCell, ModifiedModelCell, RegularModelCell, Resistors},
+    resistors::{Internal, ModifiedModelCell, RegularModelCell, Resistors},
     uom::{Ampere, Volt},
 };
 
