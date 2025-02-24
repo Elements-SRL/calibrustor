@@ -21,13 +21,19 @@ impl IVEstimationIGain {
     }
 }
 
-impl<D: Device<Volt, Ampere>> Step<Volt, Ampere, D> for IVEstimationIGain {
+impl<D> Step<Volt, Ampere, D> for IVEstimationIGain 
+where
+    D: Device<Volt, Ampere>,
+{
     fn get_sub_steps(&self) -> Vec<impl SubStep<Volt, Ampere, D>> {
         self.sub_steps.to_vec()
     }
 }
 
-impl<D: Device<Volt, Ampere>> Setup<Volt, Ampere, D> for IVEstimationIGain {
+impl<D> Setup<Volt, Ampere, D> for IVEstimationIGain 
+where
+    D: Device<Volt, Ampere>,
+{
     fn complete(self) -> Self
     where
         Self: Sized,
