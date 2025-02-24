@@ -23,19 +23,28 @@ impl IVEstimationIGainSubStep {
     }
 }
 
-impl<D: Device<Volt, Ampere>> SubStep<Volt, Ampere, D> for IVEstimationIGainSubStep {
+impl<D> SubStep<Volt, Ampere, D> for IVEstimationIGainSubStep
+where
+    D: Device<Volt, Ampere>,
+{
     fn get_strategy(&self) -> impl CalibrationStrategy<Volt, Ampere, D> {
         self.cs.clone()
     }
 }
 
-impl<D: Device<Volt, Ampere>> CalibrationStrategy<Volt, Ampere, D> for IVEstimationIGainSubStep {
+impl<D> CalibrationStrategy<Volt, Ampere, D> for IVEstimationIGainSubStep
+where
+    D: Device<Volt, Ampere>,
+{
     fn calibrate(&self, d: &D, cc: CalibContext<Volt, Ampere>) -> CalibrationResult<Volt, Ampere> {
         self.get_strategy().calibrate(d, cc)
     }
 }
 
-impl<D: Device<Volt, Ampere>> Setup<Volt, Ampere, D> for IVEstimationIGainSubStep {
+impl<D> Setup<Volt, Ampere, D> for IVEstimationIGainSubStep
+where
+    D: Device<Volt, Ampere>,
+{
     fn complete(self) -> Self
     where
         Self: Sized,

@@ -12,7 +12,10 @@ use std::collections::HashMap;
 #[derive(Default, Clone, Copy)]
 pub struct IOffsetStd;
 
-impl<D: Device<Volt, Ampere>> CalibrationStrategy<Volt, Ampere, D> for IOffsetStd {
+impl<D> CalibrationStrategy<Volt, Ampere, D> for IOffsetStd
+where
+    D: Device<Volt, Ampere>,
+{
     fn calibrate(&self, d: &D, cc: CalibContext<Volt, Ampere>) -> CalibrationResult<Volt, Ampere> {
         let a = d.acquire(1.0);
         let offsets = a.get_readout_means();
