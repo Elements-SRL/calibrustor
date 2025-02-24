@@ -154,13 +154,10 @@ mod tests {
     use super::*;
     use crate::{
         calibration::{
-            calib_context::CalibContext,
-            step::{vc_i_gain::IVEstimationIGain, vc_i_offset::VcIOffsetStd},
-            strategies::{iv_estimation::IVEstimation, vc_i_offset::IOffsetStd},
-            sub_step::{
+            calib_context::CalibContext, program::ProgramEl03c, step::{vc_i_gain::IVEstimationIGain, vc_i_offset::VcIOffsetStd}, strategies::{iv_estimation::IVEstimation, vc_i_offset::IOffsetStd}, sub_step::{
                 vc_i_gain::iv_estimation::IVEstimationIGainSubStep,
                 vc_i_offset::i_offset_std::VcIOffsetStdSubStep,
-            },
+            }
         },
         resistors::{ModelCell, Resistors},
     };
@@ -210,7 +207,7 @@ mod tests {
             VcIOffsetStdSubStep::new(n20_fast),
         ]);
         let dev = Dummy::<Volt, Ampere>::new(1, 6);
-        // let p = El03CProgram::new(vec![Arc::new(vc_i_gain), Arc::new(vc_i_offset)]);
+        let p = ProgramEl03c::new(Some(vc_i_gain), Some(vc_i_offset));
         // p.get_steps().into_iter().map(|s| {
         //     let s = s.setup(&dev);
         //     s
