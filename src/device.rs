@@ -56,7 +56,21 @@ pub trait Device<S: Uom, R: Uom> {
         Self: Sized;
 }
 
-pub trait EepromDevice<S, R> : Device<S, R> where S: Uom, R: Uom {
+pub trait EepromDevice<S, R>: Device<S, R>
+where
+    S: Uom,
+    R: Uom,
+{
     fn read_eeprom(&self) -> Vec<u8>;
     fn write_eeprom(&self) -> Result<(), DeviceError>;
+}
+
+pub trait InputSwitchDevice<S, R>: Device<S, R>
+where
+    S: Uom,
+    R: Uom,
+{
+    fn set_switches(self, map: HashMap<usize, bool>) -> Result<Self, DeviceError>
+    where
+        Self: Sized;
 }

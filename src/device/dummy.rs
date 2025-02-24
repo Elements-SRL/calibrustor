@@ -151,17 +151,19 @@ impl Device<Ampere, Volt> for Dummy<Ampere, Volt> {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-
     use super::*;
     use crate::{
         calibration::{
             calib_context::CalibContext,
             step::{
-                vc_i_gain::{IVEstimationIGain, IVEstimationIGainSubStep},
-                vc_i_offset::{VcIOffsetStd, VcIOffsetStdSubStep},
+                vc_i_gain::IVEstimationIGain,
+                vc_i_offset::{IOffsetStd, VcIOffsetStd},
             },
-            strategies::{iv_estimation::IVEstimation, vc_i_offset::IOffsetStd},
+            strategies::iv_estimation::IVEstimation,
+            sub_step::{
+                vc_i_gain::iv_estimation::IVEstimationIGainSubStep,
+                vc_i_offset::i_offset_std::VcIOffsetStdSubStep,
+            },
         },
         resistors::{ModelCell, Resistors},
     };
@@ -193,7 +195,7 @@ mod tests {
         let n20_slow = CalibContext::new(stim_range, range_20n, sr1);
         let n20_fast = CalibContext::new(stim_range, range_20n, sr2);
 
-        let offset = IOffsetStd::default();
+        let offset = IOffsetStd;
 
         let big_res = IVEstimation::new(big_resistors, stim_big_resistors);
         let small_res = IVEstimation::new(small_resistors, stim_small_resistors);
