@@ -79,3 +79,14 @@ where
     where
         Self: Sized;
 }
+
+
+pub trait InternalResistorsDevice<S, R>: Device<S, R>
+where
+    S: Uom,
+    R: Uom,
+{
+    fn set_resistors(self, map: HashMap<usize, bool>) -> Result<Self, DeviceError>
+    where
+        Self: Sized;
+}
