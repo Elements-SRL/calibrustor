@@ -155,11 +155,8 @@ mod tests {
     use crate::{
         calibration::{
             calib_context::CalibContext,
-            step::{
-                vc_i_gain::IVEstimationIGain,
-                vc_i_offset::{IOffsetStd, VcIOffsetStd},
-            },
-            strategies::iv_estimation::IVEstimation,
+            step::{vc_i_gain::IVEstimationIGain, vc_i_offset::VcIOffsetStd},
+            strategies::{iv_estimation::IVEstimation, vc_i_offset::IOffsetStd},
             sub_step::{
                 vc_i_gain::iv_estimation::IVEstimationIGainSubStep,
                 vc_i_offset::i_offset_std::VcIOffsetStdSubStep,
