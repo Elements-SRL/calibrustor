@@ -23,12 +23,8 @@ impl IVEstimation {
     }
 }
 
-impl CalibrationStrategy<Volt, Ampere> for IVEstimation {
-    fn calibrate(
-        &self,
-        d: &dyn Device<Volt, Ampere>,
-        cc: CalibContext<Volt, Ampere>,
-    ) -> CalibrationResult<Volt, Ampere> {
+impl<D: Device<Volt, Ampere>> CalibrationStrategy<Volt, Ampere, D> for IVEstimation {
+    fn calibrate(&self, d: &D, cc: CalibContext<Volt, Ampere>) -> CalibrationResult<Volt, Ampere> {
         let resistors = self.resistors.get_values();
         let active_channels_num = d.get_readout_channels_num();
         assert_eq!(resistors.len(), active_channels_num);

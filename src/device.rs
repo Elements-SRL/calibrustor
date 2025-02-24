@@ -13,7 +13,12 @@ use std::collections::HashMap;
 
 pub mod dummy;
 
-pub trait Device<S: Uom, R: Uom> {
+pub trait Device<S, R>
+where
+    S: Uom,
+    R: Uom,
+    Self: Sized,
+{
     // getters
     fn get_active_stimuli_channels(&self) -> Vec<usize>;
     fn get_active_readout_channels(&self) -> Vec<usize>;

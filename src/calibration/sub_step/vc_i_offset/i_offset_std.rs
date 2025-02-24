@@ -22,27 +22,20 @@ impl VcIOffsetStdSubStep {
     }
 }
 
-impl SubStep<Volt, Ampere> for VcIOffsetStdSubStep {
-    fn get_strategy(&self) -> impl CalibrationStrategy<Volt, Ampere> {
+impl<D: Device<Volt, Ampere>> SubStep<Volt, Ampere, D> for VcIOffsetStdSubStep {
+    fn get_strategy(&self) -> impl CalibrationStrategy<Volt, Ampere, D> {
         IOffsetStd
     }
 }
 
-impl CalibrationStrategy<Volt, Ampere> for VcIOffsetStdSubStep {
-    fn calibrate(
-        &self,
-        d: &dyn Device<Volt, Ampere>,
-        cc: CalibContext<Volt, Ampere>,
-    ) -> CalibrationResult<Volt, Ampere> {
+impl<D: Device<Volt, Ampere>> CalibrationStrategy<Volt, Ampere, D> for VcIOffsetStdSubStep {
+    fn calibrate(&self, d: &D, cc: CalibContext<Volt, Ampere>) -> CalibrationResult<Volt, Ampere> {
         let s = self.get_strategy();
         s.calibrate(d, cc)
     }
 }
-impl Setup<Volt, Ampere> for VcIOffsetStdSubStep {
-    fn setup(
-        &self,
-        d: impl Device<Volt, Ampere>,
-    ) -> Result<Box<dyn Device<Volt, Ampere>>, DeviceError>
+impl<D: Device<Volt, Ampere>> Setup<Volt, Ampere, D> for VcIOffsetStdSubStep {
+    fn setup(&self, d: D) -> Result<D, DeviceError>
     where
         Self: Sized,
     {

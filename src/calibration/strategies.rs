@@ -3,10 +3,11 @@ use crate::{device::Device, uom::Uom};
 pub mod iv_estimation;
 pub mod vc_i_offset;
 
-pub trait CalibrationStrategy<S, R>
+pub trait CalibrationStrategy<S, R, D>
 where
     S: Uom,
     R: Uom,
+    D: Device<S, R>,
 {
-    fn calibrate(&self, d: &dyn Device<S, R>, cc: CalibContext<S, R>) -> CalibrationResult<S, R>;
+    fn calibrate(&self, d: &D, cc: CalibContext<S, R>) -> CalibrationResult<S, R>;
 }

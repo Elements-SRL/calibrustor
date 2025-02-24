@@ -20,13 +20,13 @@ impl VcIOffsetStd {
     }
 }
 
-impl Step<Volt, Ampere> for VcIOffsetStd {
-    fn get_sub_steps(&self) -> Vec<impl SubStep<Volt, Ampere>> {
+impl<D: Device<Volt, Ampere>> Step<Volt, Ampere, D> for VcIOffsetStd {
+    fn get_sub_steps(&self) -> Vec<impl SubStep<Volt, Ampere, D>> {
         self.sub_steps.to_vec()
     }
 }
 
-impl Setup<Volt, Ampere> for VcIOffsetStd {
+impl<D: Device<Volt, Ampere>> Setup<Volt, Ampere, D> for VcIOffsetStd {
     fn complete(self) -> Self
     where
         Self: Sized,
@@ -36,10 +36,7 @@ impl Setup<Volt, Ampere> for VcIOffsetStd {
     fn get_status(&self) -> SetupStatus {
         SetupStatus::NotInitialized
     }
-    fn setup(
-        &self,
-        d: impl crate::device::Device<Volt, Ampere>,
-    ) -> Result<Box<dyn Device<Volt, Ampere>>, DeviceError>
+    fn setup(&self, d: D) -> Result<D, DeviceError>
     where
         Self: Sized,
     {

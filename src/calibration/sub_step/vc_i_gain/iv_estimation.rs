@@ -23,23 +23,19 @@ impl IVEstimationIGainSubStep {
     }
 }
 
-impl SubStep<Volt, Ampere> for IVEstimationIGainSubStep {
-    fn get_strategy(&self) -> impl CalibrationStrategy<Volt, Ampere> {
+impl<D: Device<Volt, Ampere>> SubStep<Volt, Ampere, D> for IVEstimationIGainSubStep {
+    fn get_strategy(&self) -> impl CalibrationStrategy<Volt, Ampere, D> {
         self.cs.clone()
     }
 }
 
-impl CalibrationStrategy<Volt, Ampere> for IVEstimationIGainSubStep {
-    fn calibrate(
-        &self,
-        d: &dyn Device<Volt, Ampere>,
-        cc: CalibContext<Volt, Ampere>,
-    ) -> CalibrationResult<Volt, Ampere> {
+impl<D: Device<Volt, Ampere>> CalibrationStrategy<Volt, Ampere, D> for IVEstimationIGainSubStep {
+    fn calibrate(&self, d: &D, cc: CalibContext<Volt, Ampere>) -> CalibrationResult<Volt, Ampere> {
         self.get_strategy().calibrate(d, cc)
     }
 }
 
-impl Setup<Volt, Ampere> for IVEstimationIGainSubStep {
+impl<D: Device<Volt, Ampere>> Setup<Volt, Ampere, D> for IVEstimationIGainSubStep {
     fn complete(self) -> Self
     where
         Self: Sized,
@@ -49,10 +45,7 @@ impl Setup<Volt, Ampere> for IVEstimationIGainSubStep {
     fn get_status(&self) -> SetupStatus {
         todo!()
     }
-    fn setup(
-        &self,
-        d: impl Device<Volt, Ampere>,
-    ) -> Result<Box<dyn Device<Volt, Ampere>>, DeviceError>
+    fn setup(&self, d: D) -> Result<D, DeviceError>
     where
         Self: Sized,
     {
