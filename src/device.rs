@@ -11,6 +11,8 @@ use crate::{
 };
 use std::collections::HashMap;
 
+pub mod dummy;
+
 pub trait Device<S: Uom, R: Uom> {
     // getters
     fn get_active_stimuli_channels(&self) -> Vec<usize>;
