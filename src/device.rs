@@ -38,27 +38,16 @@ where
         ));
     }
     fn set_stimuli(&self, map: HashMap<usize, f64>);
-    fn set_stimulus_range(self, rm: RangedMeasurement<S>) -> Result<Self, DeviceError>
-    where
-        Self: Sized;
-    fn set_readout_range(self, rm: RangedMeasurement<R>) -> Result<Self, DeviceError>
-    where
-        Self: Sized;
-    fn set_sampling_rate(self, sr: SamplingRate) -> Result<Self, DeviceError>
-    where
-        Self: Sized;
-    fn set_calib_context(self, cc: &CalibContext<S, R>) -> Result<Self, DeviceError>
-    where
-        Self: Sized,
-    {
+    fn set_stimulus_range(self, rm: RangedMeasurement<S>) -> Result<Self, DeviceError>;
+    fn set_readout_range(self, rm: RangedMeasurement<R>) -> Result<Self, DeviceError>;
+    fn set_sampling_rate(self, sr: SamplingRate) -> Result<Self, DeviceError>;
+    fn set_calib_context(self, cc: &CalibContext<S, R>) -> Result<Self, DeviceError>{
         self.set_stimulus_range(cc.get_stimulus_range())?
             .set_readout_range(cc.get_readout_range())?
             .set_sampling_rate(cc.get_sampling_rate())
     }
     fn acquire(&self, t: f64) -> Acquisition;
-    fn set_calibration(self, cr: CalibrationResult<S, R>) -> Result<Self, CalibrationError>
-    where
-        Self: Sized;
+    fn set_calibration(self, cr: CalibrationResult<S, R>) -> Result<Self, CalibrationError>;
 }
 
 pub trait EepromDevice<S, R>: Device<S, R>
